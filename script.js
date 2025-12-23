@@ -26,7 +26,7 @@ let currentTempC = 0;
 searchBtn.addEventListener("click", () => {
   const city = cityInput.value.trim();
   if (!city) {
-    showError("Please enter a city name");
+    showError("Please enter a valid city name");
     return;
   }
   fetchWeather(city);
