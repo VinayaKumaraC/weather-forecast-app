@@ -1,11 +1,12 @@
 🌦️ Weather Forecast Application
 📌 Project Overview
-
 The Weather Forecast Application is a responsive web application that displays real-time weather information using a public weather API.
-It allows users to search weather details by city name or by using their current location.
-The application is designed with a clean and user-friendly interface using Tailwind CSS and JavaScript.
+It allows users to search weather details by city name or by using their current location through the Geolocation API.
 
-This project was developed as part of an academic assignment to understand API integration, DOM manipulation, and responsive UI design.
+The application is designed with a clean and user-friendly interface using Tailwind CSS and JavaScript, focusing on usability, responsiveness, and real-world API integration.
+
+This project was developed as part of an academic assignment to strengthen understanding of API usage, DOM manipulation, and responsive web design.
+
 
 ✨ Features
 
@@ -15,9 +16,9 @@ Search weather by city name
 
 Fetch weather using current location (Geolocation API)
 
-Recently searched cities dropdown (using localStorage)
+Recently searched cities dropdown (stored using localStorage)
 
-Temperature unit toggle (°C / °F) for today’s weather
+Temperature unit toggle (°C / °F) for today’s temperature
 
 Dynamic background changes based on weather conditions
 
@@ -27,9 +28,9 @@ Extreme heat alert for high temperatures
 
 Weather icons based on conditions
 
-Fully responsive for mobile, tablet, and desktop screens
+Fully responsive design (mobile, tablet, and desktop)
 
-Proper error handling for invalid inputs and API errors
+Proper error handling for invalid inputs and API failures
 
 
 🛠️ Technologies Used
@@ -68,7 +69,7 @@ How to work with asynchronous data using fetch
 
 DOM manipulation and event handling
 
-Using localStorage to store recent searches
+Using localStorage to store recent user data
 
 Creating responsive layouts using Tailwind CSS
 
@@ -77,12 +78,11 @@ Handling user input validation and API errors gracefully
 
 📎 Note
 
-Node modules are not included, as this project does not require a build setup.
+This project does not require a build setup, so no node_modules folder is included.
 
-All features are implemented using vanilla JavaScript and Tailwind CDN.
+All features are implemented using vanilla JavaScript and Tailwind CSS CDN.
 
 
 👤 Author
-
 Vinaya Kumara C
-Weather Forecast Application – Intershala javascript Project
+Weather Forecast Application  JavaScript Project
