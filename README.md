@@ -8,7 +8,7 @@ HTML, Tailwind CSS, and JavaScript.
 - Search weather by city name
 - Fetch weather using current location
 - Recent searched cities dropdown
-- Temperature toggle (°C / °F)
+- Temperature toggle (°C / °F) 
 - Extreme heat alert
 - Dynamic background based on weather
 - 5-day weather forecast
@@ -22,9 +22,10 @@ HTML, Tailwind CSS, and JavaScript.
 
 ## How to Run
 1. Open the project folder in VS Code
-2. Replace `94bc46e1931c4dc1607e644d81c211a1` in `script.js`
+2. Replace `94bc46e1931c4dc1607e644d81c211a1` this with in  const API_KEY in youer `script.js`
 3. Open `index.html` in browser
 
 ## Learning Outcome
 This project helped me understand API integration,
 DOM manipulation, responsive UI design, and error handling.
+

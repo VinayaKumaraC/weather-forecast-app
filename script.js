@@ -1,5 +1,7 @@
 const API_KEY = "94bc46e1931c4dc1607e644d81c211a1";
-// Handles weather search, API calls, and UI updates
+// Weather Forecast Application Logic
+
+
 const cityInput = document.getElementById("cityInput");
 const searchBtn = document.getElementById("searchBtn");
 const locationBtn = document.getElementById("locationBtn");
@@ -22,7 +24,7 @@ const body = document.getElementById("body");
 let isCelsius = true;
 let currentTempC = 0;
 
-/* ---------------- SEARCH CITY ---------------- */
+/* ---------------- SEARCH BY CITY ---------------- */
 searchBtn.addEventListener("click", () => {
   const city = cityInput.value.trim();
   if (!city) {
@@ -35,14 +37,12 @@ searchBtn.addEventListener("click", () => {
 /* ---------------- CURRENT LOCATION ---------------- */
 locationBtn.addEventListener("click", () => {
   navigator.geolocation.getCurrentPosition(
-    pos => {
-      fetchByCoords(pos.coords.latitude, pos.coords.longitude);
-    },
+    pos => fetchByCoords(pos.coords.latitude, pos.coords.longitude),
     () => showError("Location permission denied")
   );
 });
 
-/* ---------------- FETCH BY CITY ---------------- */
+/* ---------------- FETCH CITY WEATHER ---------------- */
 async function fetchWeather(city) {
   try {
     clearUI();
@@ -60,7 +60,7 @@ async function fetchWeather(city) {
   }
 }
 
-/* ---------------- FETCH BY COORDS ---------------- */
+/* ---------------- FETCH BY COORDINATES ---------------- */
 async function fetchByCoords(lat, lon) {
   try {
     clearUI();
@@ -71,11 +71,11 @@ async function fetchByCoords(lat, lon) {
     showCurrentWeather(data);
     fetchForecast(lat, lon);
   } catch {
-    showError("Unable to fetch location weather");
+    showError("Unable to fetch weather data");
   }
 }
 
-/* ---------------- CURRENT WEATHER UI ---------------- */
+/* ---------------- DISPLAY CURRENT WEATHER ---------------- */
 function showCurrentWeather(data) {
   currentWeather.classList.remove("hidden");
 
@@ -91,29 +91,25 @@ function showCurrentWeather(data) {
   iconEl.src =
     `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
 
-  // Extreme temperature alert
   if (currentTempC > 40) {
     alertMsg.innerText = "⚠️ Extreme Heat Alert!";
     alertMsg.classList.remove("hidden");
   }
 
-  // Change background based on weather condition
   setBackground(data.weather[0].main);
 }
 
-/* ---------------- TOGGLE °C / °F ---------------- */
-
-// Toggle temperature unit for today's weather
+/* ---------------- TEMPERATURE TOGGLE ---------------- */
 toggleUnitBtn.addEventListener("click", () => {
   if (isCelsius) {
-    tempEl.innerText = `${Math.round(currentTempC * 9/5 + 32)}°F`;
+    tempEl.innerText = `${Math.round(currentTempC * 9 / 5 + 32)}°F`;
   } else {
     tempEl.innerText = `${Math.round(currentTempC)}°C`;
   }
   isCelsius = !isCelsius;
 });
 
-/* ---------------- FORECAST ---------------- */
+/* ---------------- 5-DAY FORECAST ---------------- */
 async function fetchForecast(lat, lon) {
   const res = await fetch(
     `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
@@ -122,14 +118,19 @@ async function fetchForecast(lat, lon) {
 
   forecastDiv.innerHTML = "";
 
-  const days = data.list.filter(item => item.dt_txt.includes("12:00:00"));
+  const days = data.list.filter(item =>
+    item.dt_txt.includes("12:00:00")
+  );
 
   days.forEach(day => {
     const card = document.createElement("div");
-    card.className = "bg-blue-100 rounded p-4 text-center";
+    card.className =
+      "bg-white/70 backdrop-blur rounded-xl p-4 text-center shadow hover:scale-105 transition";
 
     card.innerHTML = `
-      <p class="font-semibold">${new Date(day.dt_txt).toDateString()}</p>
+      <p class="font-semibold text-gray-800">
+        ${new Date(day.dt_txt).toDateString()}
+      </p>
       <img src="https://openweathermap.org/img/wn/${day.weather[0].icon}.png" class="mx-auto"/>
       <p>🌡️ ${Math.round(day.main.temp)}°C</p>
       <p>💨 ${day.wind.speed} m/s</p>
@@ -140,7 +141,7 @@ async function fetchForecast(lat, lon) {
   });
 }
 
-/* ---------------- RECENT CITIES ---------------- */
+/* ---------------- RECENT SEARCHES ---------------- */
 function saveCity(city) {
   let cities = JSON.parse(localStorage.getItem("cities")) || [];
   if (!cities.includes(city)) cities.push(city);
@@ -152,7 +153,7 @@ function loadCities() {
   const cities = JSON.parse(localStorage.getItem("cities")) || [];
   if (!cities.length) return;
 
-  recentCities.innerHTML = "<option>Select recent city</option>";
+  recentCities.innerHTML = "<option>Select a city</option>";
   recentCities.classList.remove("hidden");
 
   cities.forEach(city => {
@@ -164,12 +165,12 @@ function loadCities() {
 }
 
 recentCities.addEventListener("change", e => {
-  if (e.target.value !== "Select recent city") {
+  if (e.target.value !== "Select a city") {
     fetchWeather(e.target.value);
   }
 });
 
-/* ---------------- UTILITIES ---------------- */
+/* ---------------- UI HELPERS ---------------- */
 function showError(msg) {
   errorMsg.innerText = msg;
   errorMsg.classList.remove("hidden");
@@ -180,13 +181,20 @@ function clearUI() {
   alertMsg.classList.add("hidden");
 }
 
+/* ---------------- DYNAMIC BACKGROUND ---------------- */
 function setBackground(condition) {
-  body.className = "min-h-screen flex items-center justify-center";
-  if (condition.includes("Rain")) body.classList.add("bg-gray-700");
-  else if (condition.includes("Cloud")) body.classList.add("bg-gray-400");
-  else body.classList.add("bg-blue-500");
+  body.className =
+    "min-h-screen flex items-center justify-center transition-all duration-700";
+
+  if (condition.includes("Rain")) {
+    body.classList.add("bg-gradient-to-br", "from-gray-700", "to-gray-900");
+  } else if (condition.includes("Cloud")) {
+    body.classList.add("bg-gradient-to-br", "from-slate-400", "to-slate-600");
+  } else {
+    body.classList.add("bg-gradient-to-br", "from-sky-400", "to-indigo-600");
+  }
 }
 
+// Initial load
 loadCities();
 
-// Initial load of recent searched cities
