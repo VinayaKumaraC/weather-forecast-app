@@ -1,5 +1,5 @@
 const API_KEY = "94bc46e1931c4dc1607e644d81c211a1";
-
+// Handles weather search, API calls, and UI updates
 const cityInput = document.getElementById("cityInput");
 const searchBtn = document.getElementById("searchBtn");
 const locationBtn = document.getElementById("locationBtn");
