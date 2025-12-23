@@ -5,13 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Weather Forecast App</title>
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- Weather Animations -->
+  <!-- Animated Background CSS -->
   <style>
     #weatherAnimation {
       position: fixed;
@@ -23,6 +17,8 @@
       position: absolute;
       inset: 0;
     }
+
+    /* Rain */
     #rain {
       background-image: repeating-linear-gradient(
         to bottom,
@@ -37,6 +33,8 @@
       from { background-position: 0 0; }
       to { background-position: 0 100%; }
     }
+
+    /* Clouds */
     #clouds {
       background: url("https://i.imgur.com/J3KQZ9B.png") repeat-x;
       opacity: 0.25;
@@ -46,6 +44,8 @@
       from { background-position-x: 0; }
       to { background-position-x: 2000px; }
     }
+
+    /* Sunny */
     #sunny {
       background: radial-gradient(circle at top right,
         rgba(255,255,255,0.45),
@@ -53,9 +53,11 @@
       animation: sunPulse 4s ease-in-out infinite;
     }
     @keyframes sunPulse {
-      0%,100% { opacity: 0.6; }
+      0%, 100% { opacity: 0.6; }
       50% { opacity: 1; }
     }
+
+    /* Snow */
     #snow {
       background-image: radial-gradient(white 1px, transparent 1px);
       background-size: 20px 20px;
@@ -66,8 +68,12 @@
       from { background-position: 0 0; }
       to { background-position: 0 300px; }
     }
+
     .hidden { display: none; }
   </style>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gradient-to-br from-blue-400 to-indigo-600 min-h-screen text-white transition-all duration-500">
@@ -80,7 +86,6 @@
     <div id="sunny" class="weather-layer hidden"></div>
   </div>
 
-  <!-- Main Content -->
   <div class="max-w-5xl mx-auto p-4 relative z-10">
 
     <h1 class="text-3xl font-bold text-center mb-6">🌤️ Weather Dashboard</h1>
@@ -89,17 +94,19 @@
     <div class="flex flex-col md:flex-row gap-3 justify-center">
       <input id="cityInput" type="text" placeholder="Enter city name"
         class="p-3 rounded text-black w-full md:w-1/2"/>
+
       <button id="searchBtn"
         class="bg-yellow-400 text-black px-5 py-3 rounded font-semibold">
         Search
       </button>
+
       <button id="locationBtn"
         class="bg-green-400 text-black px-5 py-3 rounded font-semibold">
         Use My Location
       </button>
     </div>
 
-    <!-- Recent Cities -->
+    <!-- Recent Searches -->
     <div class="mt-4 text-center">
       <select id="recentCities" class="p-2 rounded text-black hidden">
         <option value="">Recent Searches</option>
@@ -108,13 +115,14 @@
 
     <p id="errorMsg" class="text-red-200 text-center mt-3 hidden"></p>
 
+    <!-- Current Weather -->
     <div id="currentWeather"
-      class="bg-white/20 backdrop-blur-lg rounded-xl p-6 mt-6 hidden text-center">
-    </div>
+      class="bg-white/20 backdrop-blur-lg rounded-xl p-6 mt-6 hidden text-center"></div>
 
+    <!-- Forecast -->
     <div id="forecast"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mt-6">
-    </div>
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mt-6"></div>
+
   </div>
 
   <script src="script.js"></script>
