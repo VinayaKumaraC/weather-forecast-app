@@ -22,7 +22,7 @@ HTML, Tailwind CSS, and JavaScript.
 
 ## How to Run
 1. Open the project folder in VS Code
-2. Replace `YOUR_API_KEY_HERE` in `script.js`
+2. Replace `94bc46e1931c4dc1607e644d81c211a1` in `script.js`
 3. Open `index.html` in browser
 
 ## Learning Outcome
