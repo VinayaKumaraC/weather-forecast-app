@@ -124,7 +124,7 @@ async function fetchForecast(lat, lon) {
 
   days.forEach(day => {
     const card = document.createElement("div");
-    card.className = "bg-blue-100 rounded p-3 text-center";
+    card.className = "bg-blue-100 rounded p-4 text-center";
 
     card.innerHTML = `
       <p class="font-semibold">${new Date(day.dt_txt).toDateString()}</p>
