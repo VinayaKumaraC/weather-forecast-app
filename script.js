@@ -1,200 +1,230 @@
 const API_KEY = "94bc46e1931c4dc1607e644d81c211a1";
-// Weather Forecast Application Logic
-
-
 const cityInput = document.getElementById("cityInput");
 const searchBtn = document.getElementById("searchBtn");
 const locationBtn = document.getElementById("locationBtn");
-const recentCities = document.getElementById("recentCities");
-
-const errorMsg = document.getElementById("errorMsg");
-const alertMsg = document.getElementById("alertMsg");
-
 const currentWeather = document.getElementById("currentWeather");
-const cityNameEl = document.getElementById("cityName");
-const dateEl = document.getElementById("date");
-const tempEl = document.getElementById("temp");
-const detailsEl = document.getElementById("details");
-const iconEl = document.getElementById("icon");
-const toggleUnitBtn = document.getElementById("toggleUnit");
-
 const forecastDiv = document.getElementById("forecast");
-const body = document.getElementById("body");
+const errorMsg = document.getElementById("errorMsg");
+const recentCitiesSelect = document.getElementById("recentCities");
 
+let currentTempCelsius = null;
 let isCelsius = true;
-let currentTempC = 0;
 
-/* ---------------- SEARCH BY CITY ---------------- */
+/* ---------------- EVENTS ---------------- */
+
 searchBtn.addEventListener("click", () => {
   const city = cityInput.value.trim();
   if (!city) {
-    showError("Please enter a valid city name");
+    showError("Please enter a city name");
     return;
   }
-  fetchWeather(city);
+  fetchWeatherByCity(city);
 });
 
-/* ---------------- CURRENT LOCATION ---------------- */
-locationBtn.addEventListener("click", () => {
-  navigator.geolocation.getCurrentPosition(
-    pos => fetchByCoords(pos.coords.latitude, pos.coords.longitude),
-    () => showError("Location permission denied")
-  );
+locationBtn.addEventListener("click", getLocation);
+
+recentCitiesSelect.addEventListener("change", () => {
+  if (recentCitiesSelect.value) {
+    fetchWeatherByCity(recentCitiesSelect.value);
+  }
 });
 
-/* ---------------- FETCH CITY WEATHER ---------------- */
-async function fetchWeather(city) {
+/* ---------------- ERROR ---------------- */
+
+function showError(message) {
+  errorMsg.innerText = message;
+  errorMsg.classList.remove("hidden");
+}
+
+/* ---------------- FETCH WEATHER ---------------- */
+
+async function fetchWeatherByCity(city) {
+  errorMsg.classList.add("hidden");
+
   try {
-    clearUI();
     const res = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`
     );
     if (!res.ok) throw new Error("City not found");
 
     const data = await res.json();
-    saveCity(city);
-    showCurrentWeather(data);
+    displayCurrentWeather(data);
     fetchForecast(data.coord.lat, data.coord.lon);
+    saveRecentCity(city);
   } catch (err) {
     showError(err.message);
   }
 }
 
-/* ---------------- FETCH BY COORDINATES ---------------- */
-async function fetchByCoords(lat, lon) {
-  try {
-    clearUI();
-    const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
-    );
-    const data = await res.json();
-    showCurrentWeather(data);
-    fetchForecast(lat, lon);
-  } catch {
-    showError("Unable to fetch weather data");
-  }
+/* ---------------- GEO LOCATION ---------------- */
+
+function getLocation() {
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      fetchForecast(pos.coords.latitude, pos.coords.longitude);
+    },
+    () => showError("Location permission denied")
+  );
 }
 
-/* ---------------- DISPLAY CURRENT WEATHER ---------------- */
-function showCurrentWeather(data) {
+/* ---------------- CURRENT WEATHER ---------------- */
+
+function displayCurrentWeather(data) {
   currentWeather.classList.remove("hidden");
 
-  cityNameEl.innerText = data.name;
-  dateEl.innerText = new Date().toDateString();
+  currentTempCelsius = data.main.temp;
+  isCelsius = true;
 
-  currentTempC = data.main.temp;
-  tempEl.innerText = `${Math.round(currentTempC)}°C`;
+  const condition = data.weather[0].main.toLowerCase();
+  const icon = data.weather[0].icon;
 
-  detailsEl.innerText =
-    `Humidity: ${data.main.humidity}% | Wind: ${data.wind.speed} m/s`;
+  changeBackground(condition, currentTempCelsius);
 
-  iconEl.src =
-    `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+  currentWeather.innerHTML = `
+    <h2 class="text-2xl font-bold">${data.name}</h2>
 
-  if (currentTempC > 40) {
-    alertMsg.innerText = "⚠️ Extreme Heat Alert!";
-    alertMsg.classList.remove("hidden");
-  }
+    <img
+      src="https://openweathermap.org/img/wn/${icon}@2x.png"
+      class="mx-auto"
+      alt="Weather Icon"
+    />
 
-  setBackground(data.weather[0].main);
+    <p class="capitalize">${data.weather[0].description}</p>
+
+    <p id="tempValue" class="text-4xl font-bold mt-2">
+      ${currentTempCelsius}°C
+    </p>
+
+    <button
+      onclick="toggleTemp()"
+      class="mt-2 bg-black/30 px-4 py-1 rounded"
+    >
+      Switch to °F
+    </button>
+
+    <div class="mt-3 space-y-1">
+      <p>💧 Humidity: ${data.main.humidity}%</p>
+      <p>💨 Wind: ${data.wind.speed} m/s</p>
+    </div>
+
+    ${currentTempCelsius > 40 ? `
+      <p class="mt-3 text-red-300 font-bold">
+        ⚠️ Extreme Heat Alert!
+      </p>` : ""}
+  `;
 }
 
-/* ---------------- TEMPERATURE TOGGLE ---------------- */
-toggleUnitBtn.addEventListener("click", () => {
-  if (isCelsius) {
-    tempEl.innerText = `${Math.round(currentTempC * 9 / 5 + 32)}°F`;
-  } else {
-    tempEl.innerText = `${Math.round(currentTempC)}°C`;
-  }
-  isCelsius = !isCelsius;
-});
+/* ---------------- TEMP TOGGLE ---------------- */
 
-/* ---------------- 5-DAY FORECAST ---------------- */
+function toggleTemp() {
+  const tempEl = document.getElementById("tempValue");
+  const btn = event.target;
+
+  if (isCelsius) {
+    const fahrenheit = (currentTempCelsius * 9/5 + 32).toFixed(1);
+    tempEl.innerText = `${fahrenheit}°F`;
+    btn.innerText = "Switch to °C";
+  } else {
+    tempEl.innerText = `${currentTempCelsius}°C`;
+    btn.innerText = "Switch to °F";
+  }
+
+  isCelsius = !isCelsius;
+}
+
+/* ---------------- FORECAST ---------------- */
+
 async function fetchForecast(lat, lon) {
   const res = await fetch(
     `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
   );
-  const data = await res.json();
 
+  const data = await res.json();
+  displayForecast(data.list);
+}
+
+function displayForecast(list) {
   forecastDiv.innerHTML = "";
 
-  const days = data.list.filter(item =>
-    item.dt_txt.includes("12:00:00")
-  );
+  for (let i = 0; i < list.length; i += 8) {
+    const day = list[i];
 
-  days.forEach(day => {
-    const card = document.createElement("div");
-    card.className =
-      "bg-white/70 backdrop-blur rounded-xl p-4 text-center shadow hover:scale-105 transition";
+    forecastDiv.innerHTML += `
+      <div class="bg-white/20 backdrop-blur-md p-4 rounded text-center">
+        <p class="font-semibold">
+          ${new Date(day.dt_txt).toDateString()}
+        </p>
 
-    card.innerHTML = `
-      <p class="font-semibold text-gray-800">
-        ${new Date(day.dt_txt).toDateString()}
-      </p>
-      <img src="https://openweathermap.org/img/wn/${day.weather[0].icon}.png" class="mx-auto"/>
-      <p>🌡️ ${Math.round(day.main.temp)}°C</p>
-      <p>💨 ${day.wind.speed} m/s</p>
-      <p>💧 ${day.main.humidity}%</p>
+        <img
+          src="https://openweathermap.org/img/wn/${day.weather[0].icon}.png"
+          class="mx-auto"
+        />
+
+        <p class="text-xl">${day.main.temp}°C</p>
+        <p>💨 ${day.wind.speed} m/s</p>
+        <p>💧 ${day.main.humidity}%</p>
+      </div>
     `;
-
-    forecastDiv.appendChild(card);
-  });
+  }
 }
 
 /* ---------------- RECENT SEARCHES ---------------- */
-function saveCity(city) {
+
+function saveRecentCity(city) {
   let cities = JSON.parse(localStorage.getItem("cities")) || [];
-  if (!cities.includes(city)) cities.push(city);
-  localStorage.setItem("cities", JSON.stringify(cities));
-  loadCities();
+
+  if (!cities.includes(city)) {
+    cities.unshift(city);
+    if (cities.length > 5) cities.pop();
+    localStorage.setItem("cities", JSON.stringify(cities));
+  }
+
+  updateRecentDropdown();
 }
 
-function loadCities() {
+function updateRecentDropdown() {
   const cities = JSON.parse(localStorage.getItem("cities")) || [];
-  if (!cities.length) return;
+  if (cities.length === 0) return;
 
-  recentCities.innerHTML = "<option>Select a city</option>";
-  recentCities.classList.remove("hidden");
+  recentCitiesSelect.classList.remove("hidden");
+  recentCitiesSelect.innerHTML = `<option value="">Recent Searches</option>`;
 
   cities.forEach(city => {
     const option = document.createElement("option");
     option.value = city;
-    option.innerText = city;
-    recentCities.appendChild(option);
+    option.textContent = city;
+    recentCitiesSelect.appendChild(option);
   });
 }
 
-recentCities.addEventListener("change", e => {
-  if (e.target.value !== "Select a city") {
-    fetchWeather(e.target.value);
+updateRecentDropdown();
+
+/* ---------------- BACKGROUND ---------------- */
+
+function changeBackground(condition, temp) {
+  const body = document.body.classList;
+
+  body.remove(
+    "from-blue-400","to-indigo-600",
+    "from-gray-600","to-gray-900",
+    "from-yellow-300","to-orange-500",
+    "from-cyan-400","to-blue-600",
+    "from-red-500","to-orange-700"
+  );
+
+  if (condition.includes("rain")) {
+    body.add("from-gray-600","to-gray-900");
+  } 
+  else if (condition.includes("cloud")) {
+    body.add("from-cyan-400","to-blue-600");
+  } 
+  else if (condition.includes("clear")) {
+    body.add("from-yellow-300","to-orange-500");
+  } 
+  else if (temp > 40) {
+    body.add("from-red-500","to-orange-700");
+  } 
+  else {
+    body.add("from-blue-400","to-indigo-600");
   }
-});
-
-/* ---------------- UI HELPERS ---------------- */
-function showError(msg) {
-  errorMsg.innerText = msg;
-  errorMsg.classList.remove("hidden");
 }
-
-function clearUI() {
-  errorMsg.classList.add("hidden");
-  alertMsg.classList.add("hidden");
-}
-
-/* ---------------- DYNAMIC BACKGROUND ---------------- */
-function setBackground(condition) {
-  body.className =
-    "min-h-screen flex items-center justify-center transition-all duration-700";
-
-  if (condition.includes("Rain")) {
-    body.classList.add("bg-gradient-to-br", "from-gray-700", "to-gray-900");
-  } else if (condition.includes("Cloud")) {
-    body.classList.add("bg-gradient-to-br", "from-slate-400", "to-slate-600");
-  } else {
-    body.classList.add("bg-gradient-to-br", "from-sky-400", "to-indigo-600");
-  }
-}
-
-// Initial load
-loadCities();
-
