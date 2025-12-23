@@ -188,3 +188,5 @@ function setBackground(condition) {
 }
 
 loadCities();
+
+// Initial load of recent searched cities
