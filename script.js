@@ -102,6 +102,8 @@ function showCurrentWeather(data) {
 }
 
 /* ---------------- TOGGLE °C / °F ---------------- */
+
+// Toggle temperature unit for today's weather
 toggleUnitBtn.addEventListener("click", () => {
   if (isCelsius) {
     tempEl.innerText = `${Math.round(currentTempC * 9/5 + 32)}°F`;
