@@ -5,71 +5,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Weather Forecast App</title>
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Font Awesome Icons -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Weather Animations -->
+  <style>
+    #weatherAnimation {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .weather-layer {
+      position: absolute;
+      inset: 0;
+    }
+    #rain {
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.4) 0px,
+        rgba(255,255,255,0.4) 2px,
+        transparent 2px,
+        transparent 10px
+      );
+      animation: rainMove 0.6s linear infinite;
+    }
+    @keyframes rainMove {
+      from { background-position: 0 0; }
+      to { background-position: 0 100%; }
+    }
+    #clouds {
+      background: url("https://i.imgur.com/J3KQZ9B.png") repeat-x;
+      opacity: 0.25;
+      animation: cloudMove 80s linear infinite;
+    }
+    @keyframes cloudMove {
+      from { background-position-x: 0; }
+      to { background-position-x: 2000px; }
+    }
+    #sunny {
+      background: radial-gradient(circle at top right,
+        rgba(255,255,255,0.45),
+        transparent 60%);
+      animation: sunPulse 4s ease-in-out infinite;
+    }
+    @keyframes sunPulse {
+      0%,100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    #snow {
+      background-image: radial-gradient(white 1px, transparent 1px);
+      background-size: 20px 20px;
+      animation: snowMove 10s linear infinite;
+      opacity: 0.6;
+    }
+    @keyframes snowMove {
+      from { background-position: 0 0; }
+      to { background-position: 0 300px; }
+    }
+    .hidden { display: none; }
+  </style>
 </head>
 
 <body class="bg-gradient-to-br from-blue-400 to-indigo-600 min-h-screen text-white transition-all duration-500">
 
-  <div class="max-w-5xl mx-auto p-4">
+  <!-- Animated Background -->
+  <div id="weatherAnimation">
+    <div id="rain" class="weather-layer hidden"></div>
+    <div id="clouds" class="weather-layer hidden"></div>
+    <div id="snow" class="weather-layer hidden"></div>
+    <div id="sunny" class="weather-layer hidden"></div>
+  </div>
 
-    <!-- Header -->
-    <h1 class="text-3xl font-bold text-center mb-6">
-      🌤️ Weather Dashboard
-    </h1>
+  <!-- Main Content -->
+  <div class="max-w-5xl mx-auto p-4 relative z-10">
 
-    <!-- Search Section -->
+    <h1 class="text-3xl font-bold text-center mb-6">🌤️ Weather Dashboard</h1>
+
+    <!-- Search -->
     <div class="flex flex-col md:flex-row gap-3 justify-center">
-      <input
-        id="cityInput"
-        type="text"
-        placeholder="Enter city name"
-        class="p-3 rounded text-black w-full md:w-1/2"
-      />
-
-      <button
-        id="searchBtn"
-        class="bg-yellow-400 hover:bg-yellow-300 text-black px-5 py-3 rounded font-semibold"
-      >
+      <input id="cityInput" type="text" placeholder="Enter city name"
+        class="p-3 rounded text-black w-full md:w-1/2"/>
+      <button id="searchBtn"
+        class="bg-yellow-400 text-black px-5 py-3 rounded font-semibold">
         Search
       </button>
-
-      <button
-        id="locationBtn"
-        class="bg-green-400 hover:bg-green-300 text-black px-5 py-3 rounded font-semibold"
-      >
+      <button id="locationBtn"
+        class="bg-green-400 text-black px-5 py-3 rounded font-semibold">
         Use My Location
       </button>
     </div>
 
-    <!-- Recent Searches Dropdown -->
+    <!-- Recent Cities -->
     <div class="mt-4 text-center">
-      <select
-        id="recentCities"
-        class="p-2 rounded text-black hidden"
-      >
+      <select id="recentCities" class="p-2 rounded text-black hidden">
         <option value="">Recent Searches</option>
       </select>
     </div>
 
-    <!-- Error Message -->
     <p id="errorMsg" class="text-red-200 text-center mt-3 hidden"></p>
 
-    <!-- Current Weather -->
-    <div
-      id="currentWeather"
-      class="bg-white/20 backdrop-blur-lg rounded-xl p-6 mt-6 hidden text-center"
-    ></div>
+    <div id="currentWeather"
+      class="bg-white/20 backdrop-blur-lg rounded-xl p-6 mt-6 hidden text-center">
+    </div>
 
-    <!-- 5 Day Forecast -->
-    <div
-      id="forecast"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mt-6"
-    ></div>
-
+    <div id="forecast"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mt-6">
+    </div>
   </div>
 
   <script src="script.js"></script>

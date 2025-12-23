@@ -204,6 +204,18 @@ updateRecentDropdown();
 function changeBackground(condition, temp) {
   const body = document.body.classList;
 
+  const rain = document.getElementById("rain");
+  const clouds = document.getElementById("clouds");
+  const snow = document.getElementById("snow");
+  const sunny = document.getElementById("sunny");
+
+  // Hide all animations
+  rain.classList.add("hidden");
+  clouds.classList.add("hidden");
+  snow.classList.add("hidden");
+  sunny.classList.add("hidden");
+
+  // Reset background gradient
   body.remove(
     "from-blue-400","to-indigo-600",
     "from-gray-600","to-gray-900",
@@ -214,16 +226,23 @@ function changeBackground(condition, temp) {
 
   if (condition.includes("rain")) {
     body.add("from-gray-600","to-gray-900");
-  } 
+    rain.classList.remove("hidden");
+  }
+  else if (condition.includes("snow")) {
+    body.add("from-cyan-400","to-blue-600");
+    snow.classList.remove("hidden");
+  }
   else if (condition.includes("cloud")) {
     body.add("from-cyan-400","to-blue-600");
-  } 
+    clouds.classList.remove("hidden");
+  }
   else if (condition.includes("clear")) {
     body.add("from-yellow-300","to-orange-500");
-  } 
+    sunny.classList.remove("hidden");
+  }
   else if (temp > 40) {
     body.add("from-red-500","to-orange-700");
-  } 
+  }
   else {
     body.add("from-blue-400","to-indigo-600");
   }
