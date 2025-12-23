@@ -4,6 +4,7 @@ This project is a responsive weather forecast web application built using
 HTML, Tailwind CSS, and JavaScript.
 
 ## Features
+- Clean and beginner-friendly user interface
 - Search weather by city name
 - Fetch weather using current location
 - Recent searched cities dropdown
