@@ -97,7 +97,7 @@ function showCurrentWeather(data) {
     alertMsg.classList.remove("hidden");
   }
 
-  // Dynamic background
+  // Change background based on weather condition
   setBackground(data.weather[0].main);
 }
 
