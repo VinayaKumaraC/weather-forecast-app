@@ -7,6 +7,9 @@ The application is designed with a clean and user-friendly interface using Tailw
 
 This project was developed as part of an academic assignment to strengthen understanding of API usage, DOM manipulation, and responsive web design.
 
+## 🔗 GitHub Repository
+
+https://github.com/VinayaKumaraC/weather-forecast-app
 
 ✨ Features
 
@@ -86,3 +89,7 @@ All features are implemented using vanilla JavaScript and Tailwind CSS CDN.
 👤 Author
 Vinaya Kumara C
 Weather Forecast Application  JavaScript Project
+
+## 📂 Source Code
+The complete source code for this project is available on GitHub:
+https://github.com/VinayaKumaraC/weather-forecast-app
